@@ -1,10 +1,11 @@
 # FactoryWatch – Industrial Robot Monitoring Dashboard
 
-**FactoryWatch – Real-time industrial robot monitoring dashboard.**
+**Real-time factory robot monitoring system** with live sensor data, status tracking, and production metrics.  
+**Frontend**: React 19 + TypeScript, Vite, MUI v7, WebSocket-powered live updates, responsive charts.  
+**Backend**: Django 5.2, DRF, Channels, Celery, Redis, PostgreSQL — realistic fake data simulation every 3s, REST API, Docker + Poetry.  
 
-**Frontend:** React 19 + TypeScript, Vite, MUI v7, WebSocket live updates, responsive charts.
-
-**Backend:** Django 5.2, DRF, Channels, Celery, Redis, PostgreSQL — fake data simulation, REST API, Docker + Poetry.
+## Demo
+![Robot Monitoring Dashboard Demo](https://github.com/karippery/robot-monitoring-dashboard/raw/main/robotmonitor.gif)
 
 [![Django 5.2](https://img.shields.io/badge/Django-5.2-092E20?logo=django)](https://www.djangoproject.com/)
 [![DRF](https://img.shields.io/badge/DRF-3.16-blue)](https://www.django-rest-framework.org/)
@@ -203,3 +204,5 @@ poetry run python manage.py createsuperuser
 3. Commit: `git commit -m 'Add cool thing'`
 4. Push: `git push origin feature/cool-thing`
 5. Open Pull Request
+
+
