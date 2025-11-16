@@ -1,7 +1,9 @@
 # FactoryWatch – Industrial Robot Monitoring Dashboard
 
 **FactoryWatch – Real-time industrial robot monitoring dashboard.**
+
 **Frontend:** React 19 + TypeScript, Vite, MUI v7, WebSocket live updates, responsive charts.
+
 **Backend:** Django 5.2, DRF, Channels, Celery, Redis, PostgreSQL — fake data simulation, REST API, Docker + Poetry.
 
 [![Django 5.2](https://img.shields.io/badge/Django-5.2-092E20?logo=django)](https://www.djangoproject.com/)
