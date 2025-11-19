@@ -11,22 +11,25 @@ class WebSocketService {
   private reconnectAttempts = 0;
   private readonly maxReconnectAttempts = 5;
   private readonly reconnectInterval = 3000;
+  private isConnecting = false;
 
-  // ---- 1. Pull WS URL from env ----
   private get wsUrl(): string {
-    const url = import.meta.env.VITE_WS_BASE_URL as string;
-    if (!url) {
-      throw new Error('VITE_WS_BASE_URL is not defined in .env.local');
-    }
+    const url = import.meta.env.VITE_WS_BASE_URL;
+    if (!url) throw new Error('VITE_WS_BASE_URL is not defined');
     return url;
   }
 
   connect() {
+    if (this.isConnecting || this.socket?.readyState === WebSocket.OPEN) return;
+    
+    this.isConnecting = true;
+    
     try {
       this.socket = new WebSocket(this.wsUrl);
 
       this.socket.onopen = () => {
         console.log('WebSocket connected');
+        this.isConnecting = false;
         this.reconnectAttempts = 0;
         this.notifyConnectionChange(true);
       };
@@ -42,15 +45,18 @@ class WebSocketService {
 
       this.socket.onclose = () => {
         console.log('WebSocket disconnected');
+        this.isConnecting = false;
         this.notifyConnectionChange(false);
         this.handleReconnect();
       };
 
       this.socket.onerror = (err) => {
         console.error('WebSocket error:', err);
+        this.isConnecting = false;
       };
     } catch (e) {
       console.error('Failed to create WebSocket:', e);
+      this.isConnecting = false;
       this.handleReconnect();
     }
   }
@@ -58,9 +64,7 @@ class WebSocketService {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(
-        `Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`
-      );
+      console.log(`Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
       setTimeout(() => this.connect(), this.reconnectInterval);
     } else {
       console.error('Max reconnection attempts reached');
@@ -68,8 +72,10 @@ class WebSocketService {
   }
 
   disconnect() {
+    this.reconnectAttempts = this.maxReconnectAttempts; // Stop reconnecting
     this.socket?.close();
     this.socket = null;
+    this.isConnecting = false;
   }
 
   subscribeToMessages(cb: MessageCallback) {
@@ -82,9 +88,7 @@ class WebSocketService {
   subscribeToConnection(cb: ConnectionCallback) {
     this.connectionCallbacks.push(cb);
     return () => {
-      this.connectionCallbacks = this.connectionCallbacks.filter(
-        (c) => c !== cb
-      );
+      this.connectionCallbacks = this.connectionCallbacks.filter((c) => c !== cb);
     };
   }
 

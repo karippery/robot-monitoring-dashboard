@@ -1,3 +1,4 @@
+// src/types/robot.ts
 export type RobotStatus = 'online' | 'offline' | 'maintenance' | 'error';
 export type RobotType = 'welding' | 'assembly' | 'painting' | 'packaging' | 'inspection';
 
@@ -28,32 +29,12 @@ export interface Robot {
   created_at: string;
   updated_at: string;
   latest_data?: RobotData;
-  sensor_data?: RobotData[];
 }
 
-// Updated WebSocket Message Types
-export type WebSocketMessage =
-  | {
-      type: 'initial_data';
-      robots: Robot[];
-    }
-  | {
-      type: 'robot_update';
-      update_type: 'live_data';
-      robots: Robot[];  // <-- Add this new structure
-      timestamp: string;
-      total_robots: number;
-    }
-  | {
-      type: 'robot_update';
-      robot: Robot;  // <-- Keep the old structure for compatibility
-    }
-  | {
-      type: 'data_update';
-      data: RobotData;
-    }
-  | {
-      type: 'status_change';
-      robot_id: number;
-      status: RobotStatus;
-    };
+// Simplified WebSocket Message Types
+export type WebSocketMessage = 
+  | { type: 'initial_data'; robots: Robot[] }
+  | { type: 'robot_update'; robot: Robot }
+  | { type: 'robot_update'; robots: Robot[]; timestamp: string; total_robots: number }
+  | { type: 'data_update'; data: RobotData }
+  | { type: 'status_change'; robot_id: number; status: RobotStatus };

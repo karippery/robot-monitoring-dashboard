@@ -1,3 +1,4 @@
+// frontend/src/components/RobotDetail.tsx
 import { useRobot } from '@/contexts/RobotContext';
 import { industrialTheme } from '@/theme';
 import { ArrowBack, Pause, PlayArrow, Refresh } from '@mui/icons-material';
@@ -47,9 +48,9 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
   const { 
     selectedRobot, 
     robotData, 
-    fetchRobot, 
-    fetchRobotHistory, 
-    detailLoading, 
+    selectRobot, 
+    refreshData, 
+    loading,  // Changed from detailLoading to loading
     error,
     autoRefresh,
     setAutoRefresh 
@@ -59,9 +60,8 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
 
   // Load robot data only once when component mounts
   useEffect(() => {
-    fetchRobot(robotId);
-    fetchRobotHistory(robotId, 24); // 24 hours of history
-  }, [robotId, fetchRobot, fetchRobotHistory]);
+    selectRobot(robotId); // Changed from fetchRobot to selectRobot
+  }, [robotId, selectRobot]);
 
   // Use useMemo to optimize chart data preparation and prevent unnecessary re-renders
   const chartData: ChartData[] = useMemo(() => {
@@ -84,8 +84,7 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
   }, [robotData, robotId]);
 
   const handleManualRefresh = () => {
-    fetchRobot(robotId);
-    fetchRobotHistory(robotId, 24);
+    refreshData(); // Changed from fetchRobot + fetchRobotHistory to refreshData
     setLastRefresh(new Date());
   };
 
@@ -93,8 +92,8 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
     setAutoRefresh(!autoRefresh);
   };
 
-  // Use detailLoading instead of loading
-  if (detailLoading && !selectedRobot) {
+  // Use loading instead of detailLoading
+  if (loading && !selectedRobot) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
         <CircularProgress 
@@ -172,7 +171,7 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
           </Tooltip>
           
           {/* Auto Refresh Toggle */}
-          <Tooltip title={`Auto-refresh historical data every 3 seconds - ${autoRefresh ? 'ON' : 'OFF'}`}>
+          <Tooltip title={`Auto-refresh historical data every 5 seconds - ${autoRefresh ? 'ON' : 'OFF'}`}>
             <IconButton 
               onClick={toggleAutoRefresh}
               sx={{
@@ -192,10 +191,10 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
           <Tooltip title="Refresh historical data now">
             <IconButton 
               onClick={handleManualRefresh} 
-              disabled={detailLoading}
+              disabled={loading} // Changed from detailLoading to loading
               sx={{
                 color: industrialTheme.palette.primary.main,
-                animation: detailLoading ? 'spin 1s linear infinite' : 'none',
+                animation: loading ? 'spin 1s linear infinite' : 'none', // Changed from detailLoading to loading
                 '@keyframes spin': {
                   '0%': { transform: 'rotate(0deg)' },
                   '100%': { transform: 'rotate(360deg)' },
@@ -222,14 +221,14 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
         {autoRefresh ? (
           <>
-            <strong>Auto-refresh ON</strong> • Live data streaming • Historical data refreshing every 3 seconds
+            <strong>Auto-refresh ON</strong> • Live data streaming • Historical data refreshing every 5 seconds
           </>
         ) : (
           'Live data streaming • Auto-refresh OFF'
         )}
         <br />
         Last manual refresh: {lastRefresh.toLocaleTimeString()} 
-        {detailLoading && ' • Refreshing...'}
+        {loading && ' • Refreshing...'} {/* Changed from detailLoading to loading */}
       </Typography>
 
       {/* Error Alert */}
@@ -291,7 +290,7 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
           </Card>
         </Grid>
 
-        {/* Charts Section - Same as before */}
+        {/* Charts Section */}
         {hasChartData ? (
           <>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -439,9 +438,9 @@ const RobotDetail: React.FC<RobotDetailProps> = ({ robotId, onBack }) => {
                 <Button 
                   variant="outlined" 
                   onClick={handleManualRefresh}
-                  disabled={detailLoading}
+                  disabled={loading} // Changed from detailLoading to loading
                 >
-                  {detailLoading ? 'Refreshing...' : 'Load Historical Data'}
+                  {loading ? 'Refreshing...' : 'Load Historical Data'} {/* Changed from detailLoading to loading */}
                 </Button>
               </CardContent>
             </Card>
